@@ -1,15 +1,12 @@
 import { FC, useState } from 'react';
 
-type Props = {};
+type Props = {
+  setCategory: (i: number) => void;
+  activeCategory: number;
+};
 
-const Categories: FC<Props> = () => {
-  const [activeIndex, setActiveIndex] = useState(0);
-
+const Categories: FC<Props> = ({ setCategory, activeCategory }) => {
   const categories = ['Все', 'Мясные', 'Вегетарианская', 'Гриль', 'Острые', 'Закрытые'];
-
-  const handleCHangeCategory = (idx: number) => {
-    setActiveIndex(idx);
-  };
 
   return (
     <div className="categories">
@@ -17,8 +14,8 @@ const Categories: FC<Props> = () => {
         {categories.map((el, i) => (
           <li
             key={i}
-            onClick={() => handleCHangeCategory(i)}
-            className={activeIndex === i ? 'active' : ''}>
+            onClick={() => setCategory(i)}
+            className={activeCategory === i ? 'active' : ''}>
             {el}
           </li>
         ))}

@@ -1,15 +1,17 @@
-import { useEffect, useState } from 'react';
+import { createContext, useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
-import Categories from './components/Categories';
 import Header from './components/Header';
-import PizzaBlock from './components/PizzaBlock';
-import PizzaSceleton from './components/PizzaBlock/PizzaSceleton';
-import Sort from './components/Sort';
 import Cart from './pages/Cart';
 import Home from './pages/Home';
 import NotFound from './pages/NotFound';
 
 import './scss/app.scss';
+
+interface AppContextItfs {
+  search: string;
+  setSearch: (title: string) => void;
+}
+export const AppContext = createContext<AppContextItfs>({} as AppContextItfs);
 
 export interface PizzaType {
   id: number;
@@ -23,32 +25,20 @@ export interface PizzaType {
 }
 
 function App() {
-  const [pizzas, setPizzas] = useState<PizzaType[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    fetch('https://62a8befbec36bf40bdad383f.mockapi.io/pizzas')
-      .then((res) => {
-        return res.json();
-      })
-      .then((json) => {
-        setPizzas(json);
-        setIsLoading(false);
-      });
-    window.scrollTo(0, 0);
-  }, []);
-
+  const [search, setSearch] = useState('');
   return (
-    <div className="wrapper">
-      <Header />
-      <div className="content">
-        <Routes>
-          <Route path="/" element={<Home isLoading={isLoading} pizzas={pizzas} />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+    <AppContext.Provider value={{ search, setSearch }}>
+      <div className="wrapper">
+        <Header />
+        <div className="content">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </div>
       </div>
-    </div>
+    </AppContext.Provider>
   );
 }
 

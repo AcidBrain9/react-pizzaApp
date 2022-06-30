@@ -1,22 +1,41 @@
 import { FC, useState } from 'react';
 
-type Props = {};
+type Props = {
+  setSort: (i: { name: string; sortProperty: string }) => void;
+  sortType: {
+    name: string;
+    sortProperty: string;
+  };
+};
 
-const Sort: FC<Props> = () => {
+const Sort: FC<Props> = ({ setSort, sortType }) => {
   const [isVisible, setIsVisible] = useState<boolean>(false);
-  const [active, setActive] = useState<number>(0);
+  const [sorting, setSorting] = useState(true);
 
-  const sort = ['популярности', 'цене', 'алфавиту'];
+  const sort = [
+    { name: 'популярности', sortProperty: `rating&order=desc` },
+    { name: 'цене', sortProperty: `price&order=desc` },
+    { name: 'алфавиту', sortProperty: `title&order=desc` },
+  ];
 
-  const handleChangeSort = (i: number) => {
-    setIsVisible(false);
-    setActive(i);
+  const handleChangeSort = (i: { name: string; sortProperty: string }) => {
+    if (i.sortProperty === sortType.sortProperty) {
+      const newi = { ...i, sortProperty: i.sortProperty.replace('desc', 'asc') };
+      setSorting(false);
+      setIsVisible(false);
+      setSort(newi);
+    } else {
+      setSorting(true);
+      setIsVisible(false);
+      setSort(i);
+    }
   };
 
   return (
     <div className="sort">
       <div className="sort__label">
         <svg
+          style={sorting ? { transform: 'rotate(180deg)' } : {}}
           width="10"
           height="6"
           viewBox="0 0 10 6"
@@ -28,17 +47,17 @@ const Sort: FC<Props> = () => {
           />
         </svg>
         <b>Сортировка по:</b>
-        <span onClick={() => setIsVisible(!isVisible)}>{sort[active]}</span>
+        <span onClick={() => setIsVisible(!isVisible)}>{sortType.name}</span>
       </div>
       {isVisible && (
         <div className="sort__popup">
           <ul>
-            {sort.map((el, i) => (
+            {sort.map((el) => (
               <li
-                onClick={() => handleChangeSort(i)}
-                key={el}
-                className={active === i ? 'active' : ''}>
-                {el}
+                onClick={() => handleChangeSort(el)}
+                key={el.name}
+                className={sortType.name === el.name ? 'active' : ''}>
+                {el.name}
               </li>
             ))}
           </ul>
