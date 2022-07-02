@@ -1,54 +1,85 @@
-import { FC, useContext, useEffect, useState } from 'react';
+import axios from 'axios';
+import { FC, useEffect, useRef, useState } from 'react';
+import qs from 'qs';
 
-import { AppContext, PizzaType } from '../App';
+import { useNavigate } from 'react-router-dom';
+
+import { PizzaType } from '../App';
 import Categories from '../components/Categories';
 import Pagination from '../components/Pagination';
 import PizzaBlock from '../components/PizzaBlock';
 import PizzaSceleton from '../components/PizzaBlock/PizzaSceleton';
 import SearchPizza from '../components/Search';
 import Sort from '../components/Sort';
+import { useAppDispatch, useAppSelector } from '../hooks/reduxHook';
+import { setFilters } from '../redux/slices/filterSlice';
 
 type Props = {};
 
 const Home: FC<Props> = () => {
-  const { search } = useContext(AppContext);
+  const store = useAppSelector((store) => store.filter);
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const [pizzas, setPizzas] = useState<PizzaType[]>([]);
+  const isSearch = useRef(false);
+  const isMounted = useRef(false);
 
-  const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
-  const [categoryId, setCategoryId] = useState(0);
-  const [sortType, setSortType] = useState({
-    name: 'популярности',
-    sortProperty: 'rating&order=desc',
-  });
 
-  useEffect(() => {
+  const fetchPizzas = () => {
     setIsLoading(true);
 
-    const category = categoryId > 0 ? `category=${categoryId}` : ``;
-    const searchFetch = search ? `&search=${search}` : '';
+    const category = store.categoryId > 0 ? `category=${store.categoryId}` : ``;
+    const searchFetch = store.search ? `&search=${store.search}` : '';
 
-    fetch(
-      `https://62a8befbec36bf40bdad383f.mockapi.io/pizzas?page=${currentPage}&limit=4&${category}&sortBy=${sortType.sortProperty}${searchFetch}`,
-    )
+    axios
+      .get(
+        `https://62a8befbec36bf40bdad383f.mockapi.io/pizzas?page=${store.currentPage}&limit=4&${category}&sortBy=${store.sortType.sortProperty}${searchFetch}`,
+      )
       .then((res) => {
-        return res.json();
-      })
-      .then((json) => {
-        setPizzas(json);
+        setPizzas(res.data);
         setIsLoading(false);
       });
+  };
 
+  useEffect(() => {
+    if (window.location.search) {
+      const params = qs.parse(window.location.search.substring(1));
+
+      dispatch(setFilters(params));
+      isSearch.current = true;
+    }
+  }, []);
+
+  useEffect(() => {
     window.scrollTo(0, 0);
-  }, [categoryId, sortType, search, currentPage]);
+    if (!isSearch.current) {
+      fetchPizzas();
+    }
+
+    isSearch.current = false;
+  }, [store.categoryId, store.sortType, store.search, store.currentPage]);
+
+  useEffect(() => {
+    if (isMounted.current) {
+      const queryString = qs.stringify({
+        sortType: store.sortType,
+        categoryId: store.categoryId,
+        currentPage: store.currentPage,
+        search: store.search,
+      });
+      navigate(`?${queryString}`);
+    }
+    isMounted.current = true;
+  }, [store.categoryId, store.sortType, store.search, store.currentPage]);
 
   return (
     <div className="container">
       <SearchPizza />
       <div className="content__top">
-        <Categories setCategory={(i) => setCategoryId(i)} activeCategory={categoryId} />
-        <Sort setSort={(i) => setSortType(i)} sortType={sortType} />
+        <Categories />
+        <Sort />
       </div>
       <h2 className="content__title">Все пиццы</h2>
       <div className="content__items">
@@ -56,7 +87,7 @@ const Home: FC<Props> = () => {
           ? [...new Array(4)].map((_, i) => <PizzaSceleton key={i} />)
           : pizzas.map((obj) => <PizzaBlock key={obj.id} {...obj} />)}
       </div>
-      <Pagination onChangePage={(number: number) => setCurrentPage(number)} />
+      <Pagination />
     </div>
   );
 };
