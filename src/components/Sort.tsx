@@ -1,16 +1,15 @@
 import { FC, useState } from 'react';
+import { useAppDispatch, useAppSelector } from '../hooks/reduxHook';
+import { setSortType } from '../redux/slices/filterSlice';
 
-type Props = {
-  setSort: (i: { name: string; sortProperty: string }) => void;
-  sortType: {
-    name: string;
-    sortProperty: string;
-  };
-};
+type Props = {};
 
-const Sort: FC<Props> = ({ setSort, sortType }) => {
+const Sort: FC<Props> = () => {
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const [sorting, setSorting] = useState(true);
+
+  const sortType = useAppSelector((store) => store.filter.sortType);
+  const dispatch = useAppDispatch();
 
   const sort = [
     { name: 'популярности', sortProperty: `rating&order=desc` },
@@ -23,11 +22,11 @@ const Sort: FC<Props> = ({ setSort, sortType }) => {
       const newi = { ...i, sortProperty: i.sortProperty.replace('desc', 'asc') };
       setSorting(false);
       setIsVisible(false);
-      setSort(newi);
+      dispatch(setSortType(newi));
     } else {
       setSorting(true);
       setIsVisible(false);
-      setSort(i);
+      dispatch(setSortType(i));
     }
   };
 

@@ -22,4 +22,14 @@
     top: 50%;
     transform: translateY(-50%);
   }
+
+  .cross {
+    width: 28px;
+    height: 28px;
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+  }
 }
