@@ -4,7 +4,6 @@ import qs from 'qs';
 
 import { useNavigate } from 'react-router-dom';
 
-import { PizzaType } from '../App';
 import Categories from '../components/Categories';
 import Pagination from '../components/Pagination';
 import PizzaBlock from '../components/PizzaBlock';
@@ -13,37 +12,34 @@ import SearchPizza from '../components/Search';
 import Sort from '../components/Sort';
 import { useAppDispatch, useAppSelector } from '../hooks/reduxHook';
 import { setFilters } from '../redux/slices/filterSlice';
+import { fetchPizzasAction } from '../redux/slices/pizzasSlice';
 
 type Props = {};
 
 const Home: FC<Props> = () => {
-  const store = useAppSelector((store) => store.filter);
+  const filter = useAppSelector((store) => store.filter);
+  const pizzas = useAppSelector((store) => store.pizzas);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const [pizzas, setPizzas] = useState<PizzaType[]>([]);
   const isSearch = useRef(false);
   const isMounted = useRef(false);
 
-  const [isLoading, setIsLoading] = useState(true);
-
-  const fetchPizzas = () => {
-    setIsLoading(true);
-
-    const category = store.categoryId > 0 ? `category=${store.categoryId}` : ``;
-    const searchFetch = store.search ? `&search=${store.search}` : '';
-
-    axios
-      .get(
-        `https://62a8befbec36bf40bdad383f.mockapi.io/pizzas?page=${store.currentPage}&limit=4&${category}&sortBy=${store.sortType.sortProperty}${searchFetch}`,
-      )
-      .then((res) => {
-        setPizzas(res.data);
-        setIsLoading(false);
-      });
+  const fetchPizzas = async () => {
+    const category = filter.categoryId > 0 ? `category=${filter.categoryId}` : ``;
+    const searchFetch = filter.search ? `&search=${filter.search}` : '';
+    dispatch(
+      fetchPizzasAction({
+        category,
+        searchFetch,
+        currentPage: filter.currentPage,
+        sortProperty: filter.sortType.sortProperty,
+      }),
+    );
   };
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     if (window.location.search) {
       const params = qs.parse(window.location.search.substring(1));
 
@@ -53,26 +49,28 @@ const Home: FC<Props> = () => {
   }, []);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
     if (!isSearch.current) {
       fetchPizzas();
     }
 
     isSearch.current = false;
-  }, [store.categoryId, store.sortType, store.search, store.currentPage]);
+  }, [filter.categoryId, filter.sortType, filter.search, filter.currentPage]);
 
   useEffect(() => {
     if (isMounted.current) {
       const queryString = qs.stringify({
-        sortType: store.sortType,
-        categoryId: store.categoryId,
-        currentPage: store.currentPage,
-        search: store.search,
+        sortType: filter.sortType,
+        categoryId: filter.categoryId,
+        currentPage: filter.currentPage,
+        search: filter.search,
       });
       navigate(`?${queryString}`);
     }
     isMounted.current = true;
-  }, [store.categoryId, store.sortType, store.search, store.currentPage]);
+  }, [filter.categoryId, filter.sortType, filter.search, filter.currentPage]);
+
+  const pizzaBlocks = pizzas.pizzaItems.map((obj) => <PizzaBlock key={obj.id} {...obj} />);
+  const sceletons = [...new Array(8)].map((_, i) => <PizzaSceleton key={i} />);
 
   return (
     <div className="container">
@@ -81,13 +79,28 @@ const Home: FC<Props> = () => {
         <Categories />
         <Sort />
       </div>
-      <h2 className="content__title">Все пиццы</h2>
-      <div className="content__items">
-        {isLoading
-          ? [...new Array(4)].map((_, i) => <PizzaSceleton key={i} />)
-          : pizzas.map((obj) => <PizzaBlock key={obj.id} {...obj} />)}
-      </div>
-      <Pagination />
+
+      {pizzas.status === 'error' ? (
+        <div className="content__error-info">
+          <h2>
+            Произошла ошибка сервера <i>😕</i>
+          </h2>
+          <p>
+            Мы пытаемя всё исправить.
+            <br />
+            Попробуйте перезагрузить или повторите попытку через 2 минуты.
+          </p>
+        </div>
+      ) : (
+        <>
+          {' '}
+          <h2 className="content__title">Все пиццы</h2>
+          <div className="content__items">
+            {pizzas.status === 'loading' ? sceletons : pizzaBlocks}
+          </div>
+          <Pagination />
+        </>
+      )}
     </div>
   );
 };

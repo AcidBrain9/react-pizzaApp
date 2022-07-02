@@ -2,10 +2,12 @@ import { FC } from 'react';
 import { Link } from 'react-router-dom';
 
 import logoSvg from '../assets/img/pizza-logo.svg';
+import { useAppSelector } from '../hooks/reduxHook';
 
 type Props = {};
 
 const Header: FC<Props> = () => {
+  const cart = useAppSelector((state) => state.cart);
   return (
     <div className="header">
       <div className="container">
@@ -21,7 +23,7 @@ const Header: FC<Props> = () => {
         </Link>
         <div className="header__cart">
           <Link to="/cart" className="button button--cart">
-            <span>520 ₽</span>
+            <span>{cart.totalPrice} ₽</span>
             <div className="button__delimiter"></div>
             <svg
               width="18"
@@ -51,7 +53,12 @@ const Header: FC<Props> = () => {
                 strokeLinejoin="round"
               />
             </svg>
-            <span>3</span>
+            <span>
+              {' '}
+              {cart.items.reduce((sum, obj) => {
+                return obj.count + sum;
+              }, 0)}{' '}
+            </span>
           </Link>
         </div>
       </div>
