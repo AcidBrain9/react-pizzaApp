@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, PointerEventHandler, useEffect, useRef, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../hooks/reduxHook';
 import { setSortType } from '../redux/slices/filterSlice';
 
@@ -6,7 +6,8 @@ type Props = {};
 
 const Sort: FC<Props> = () => {
   const [isVisible, setIsVisible] = useState<boolean>(false);
-  const [sorting, setSorting] = useState(true);
+  const [sorting, setSorting] = useState<boolean>(true);
+  const sortRef = useRef<HTMLDivElement>(null);
 
   const sortType = useAppSelector((store) => store.filter.sortType);
   const dispatch = useAppDispatch();
@@ -30,8 +31,21 @@ const Sort: FC<Props> = () => {
     }
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event: any) => {
+      if (!event?.path?.includes(sortRef.current)) {
+        setIsVisible(false);
+      }
+    };
+    document.body.addEventListener('click', handleClickOutside);
+
+    return () => {
+      document.body.removeEventListener('click', handleClickOutside);
+    };
+  }, []);
+
   return (
-    <div className="sort">
+    <div ref={sortRef} className="sort">
       <div className="sort__label">
         <svg
           style={sorting ? { transform: 'rotate(180deg)' } : {}}
