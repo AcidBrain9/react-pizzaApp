@@ -3,12 +3,15 @@ import qs from 'qs';
 
 import { useNavigate } from 'react-router-dom';
 
-import Categories from '../components/Categories';
-import Pagination from '../components/Pagination';
-import PizzaBlock from '../components/PizzaBlock';
-import PizzaSceleton from '../components/PizzaBlock/PizzaSceleton';
-import SearchPizza from '../components/Search';
-import Sort from '../components/Sort';
+import {
+  Categories,
+  Pagination,
+  PizzaBlock,
+  PizzaSceleton,
+  SearchPizza,
+  Sort,
+} from '../components';
+
 import { useAppDispatch, useAppSelector } from '../hooks/reduxHook';
 import {
   getFilterCategoryIdSelector,
