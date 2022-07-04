@@ -1,26 +1,35 @@
-import { FC, PointerEventHandler, useEffect, useRef, useState } from 'react';
+import React from 'react';
 import { useAppDispatch, useAppSelector } from '../hooks/reduxHook';
-import { setSortType } from '../redux/slices/filterSlice';
+import { setSortType } from '../redux/slices/filter/slice';
+import {
+  FilterNamesKeys,
+  FilterPropertyKeys,
+  Sort as SortType,
+} from '../redux/slices/filter/types';
 
-type Props = {};
+const sort: SortType[] = [
+  { name: FilterNamesKeys.RATING, sortProperty: FilterPropertyKeys.RATINGDESC },
+  { name: FilterNamesKeys.PRICE, sortProperty: FilterPropertyKeys.PRICEDESC },
+  { name: FilterNamesKeys.ALPH, sortProperty: FilterPropertyKeys.TITLEDESC },
+];
 
-const Sort: FC<Props> = () => {
-  const [isVisible, setIsVisible] = useState<boolean>(false);
-  const [sorting, setSorting] = useState<boolean>(true);
-  const sortRef = useRef<HTMLDivElement>(null);
+type Props = {
+  sortType: SortType;
+};
 
-  const sortType = useAppSelector((store) => store.filter.sortType);
+const Sort: React.FC<Props> = React.memo(({ sortType }) => {
+  const [isVisible, setIsVisible] = React.useState<boolean>(false);
+  const [sorting, setSorting] = React.useState<boolean>(true);
+  const sortRef = React.useRef<HTMLDivElement>(null);
+
   const dispatch = useAppDispatch();
 
-  const sort = [
-    { name: 'популярности', sortProperty: `rating&order=desc` },
-    { name: 'цене', sortProperty: `price&order=desc` },
-    { name: 'алфавиту', sortProperty: `title&order=desc` },
-  ];
-
-  const handleChangeSort = (i: { name: string; sortProperty: string }) => {
+  const handleChangeSort = (i: SortType) => {
     if (i.sortProperty === sortType.sortProperty) {
-      const newi = { ...i, sortProperty: i.sortProperty.replace('desc', 'asc') };
+      const newi: SortType = {
+        ...i,
+        sortProperty: i.sortProperty.replace('desc', 'asc'),
+      } as SortType;
       setSorting(false);
       setIsVisible(false);
       dispatch(setSortType(newi));
@@ -31,7 +40,7 @@ const Sort: FC<Props> = () => {
     }
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     const handleClickOutside = (event: any) => {
       if (!event?.path?.includes(sortRef.current)) {
         setIsVisible(false);
@@ -78,6 +87,6 @@ const Sort: FC<Props> = () => {
       )}
     </div>
   );
-};
+});
 
 export default Sort;

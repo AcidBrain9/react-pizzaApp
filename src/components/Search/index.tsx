@@ -1,21 +1,23 @@
-import { ChangeEvent, FC, useCallback, useRef, useState } from 'react';
-import { useAppDispatch, useAppSelector } from '../../hooks/reduxHook';
-import { setSearch } from '../../redux/slices/filterSlice';
+import React from 'react';
+import { useAppDispatch } from '../../hooks/reduxHook';
 
 import debounce from 'lodash.debounce';
 
 import styles from './Search.module.scss';
+import { setSearch } from '../../redux/slices/filter/slice';
 
-type Props = {};
+type Props = {
+  search: string;
+};
 
-const SearchPizza: FC<Props> = () => {
-  const [value, setValue] = useState('');
+const SearchPizza: React.FC<Props> = React.memo(({ search }) => {
+  const [value, setValue] = React.useState(search);
 
   const dispatch = useAppDispatch();
 
-  const searchInput = useRef<HTMLInputElement>(null);
+  const searchInput = React.useRef<HTMLInputElement>(null);
 
-  const updateSerchValue = useCallback(
+  const updateSerchValue = React.useCallback(
     debounce((str) => dispatch(setSearch(str)), 500),
     [],
   );
@@ -26,7 +28,7 @@ const SearchPizza: FC<Props> = () => {
     searchInput.current?.focus();
   };
 
-  const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setValue(e.target.value);
     updateSerchValue(e.target.value);
   };
@@ -56,7 +58,7 @@ const SearchPizza: FC<Props> = () => {
       {value && (
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          enable-background="new 0 0 512 512"
+          enableBackground="new 0 0 512 512"
           height="512px"
           className={styles.cross}
           onClick={handleClear}
@@ -76,6 +78,6 @@ const SearchPizza: FC<Props> = () => {
       )}
     </div>
   );
-};
+});
 
 export default SearchPizza;

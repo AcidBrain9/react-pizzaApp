@@ -1,14 +1,13 @@
 import { FC } from 'react';
 import ReactPaginate from 'react-paginate';
 import { useAppDispatch, useAppSelector } from '../../hooks/reduxHook';
-import { setPageCount } from '../../redux/slices/filterSlice';
+import { getFilterCurrentPageSelector } from '../../redux/slices/filter/selecors';
+import { setPageCount } from '../../redux/slices/filter/slice';
 
 import style from './Pagination.module.scss';
 
-type Props = {};
-
-const Pagination: FC<Props> = () => {
-  const currentPage = useAppSelector((store) => store.filter.currentPage);
+const Pagination: FC = () => {
+  const currentPage = useAppSelector(getFilterCurrentPageSelector);
   const dispatch = useAppDispatch();
 
   return (

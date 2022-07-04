@@ -1,13 +1,25 @@
 import { FC } from 'react';
 import { useAppDispatch } from '../hooks/reduxHook';
-import { addItem, PizzaItems, reduceItem, removeItem } from '../redux/slices/cartSlice';
+import { addItem, reduceItem, removeItem } from '../redux/slices/cart/slice';
+import { PizzaItems } from '../redux/slices/cart/types';
 
 const CartPizza: FC<PizzaItems> = (props) => {
   const dispatch = useAppDispatch();
 
-  const onClickRemoveItem = () => {
+  const onRemoveItem = () => {
     if (window.confirm('Вы уверены, что хотите удалить пиццу из корзины?')) {
       dispatch(removeItem(props));
+    }
+  };
+  const onAddItem = () => {
+    dispatch(addItem(props));
+  };
+
+  const onReduceItem = () => {
+    if (props.count > 1) {
+      dispatch(reduceItem(props));
+    } else {
+      onRemoveItem();
     }
   };
 
@@ -25,7 +37,7 @@ const CartPizza: FC<PizzaItems> = (props) => {
       <div className="cart__item-count">
         <div
           className="button button--outline button--circle cart__item-count-minus"
-          onClick={() => dispatch(reduceItem(props))}>
+          onClick={onReduceItem}>
           <svg
             width="10"
             height="10"
@@ -45,7 +57,7 @@ const CartPizza: FC<PizzaItems> = (props) => {
         <b>{props.count}</b>
         <div
           className="button button--outline button--circle cart__item-count-plus"
-          onClick={() => dispatch(addItem(props))}>
+          onClick={onAddItem}>
           <svg
             width="10"
             height="10"
@@ -66,7 +78,7 @@ const CartPizza: FC<PizzaItems> = (props) => {
       <div className="cart__item-price">
         <b>{props.price * props.count} ₽</b>
       </div>
-      <div className="cart__item-remove" onClick={onClickRemoveItem}>
+      <div className="cart__item-remove" onClick={onRemoveItem}>
         <div className="button button--outline button--circle">
           <svg
             width="10"

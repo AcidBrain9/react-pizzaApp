@@ -1,13 +1,15 @@
+import { FC } from 'react';
 import { Link } from 'react-router-dom';
 import CartEmpty from '../components/CartEmpty';
 import CartPizza from '../components/CartPizza';
 import { useAppDispatch, useAppSelector } from '../hooks/reduxHook';
-import { clearItems } from '../redux/slices/cartSlice';
+import { getCartItemsSelector, getCartTotalSelector } from '../redux/slices/cart/selecors';
+import { clearItems } from '../redux/slices/cart/slice';
 
-const Cart = () => {
-  const pizzas = useAppSelector((state) => state.cart.items);
+const Cart: FC = () => {
+  const pizzas = useAppSelector(getCartItemsSelector);
 
-  const totalPrice = useAppSelector((state) => state.cart.totalPrice);
+  const totalPrice = useAppSelector(getCartTotalSelector);
   const dispatch = useAppDispatch();
 
   const onClickClearCart = () => {

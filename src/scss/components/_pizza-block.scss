@@ -7,6 +7,10 @@
 
   &__image {
     width: 260px;
+    max-height: 260px;
+    height: 100%;
+    display: block;
+    margin: auto;
   }
 
   &__title {
