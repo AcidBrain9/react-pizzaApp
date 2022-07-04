@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAppDispatch, useAppSelector } from '../hooks/reduxHook';
+import { useAppDispatch } from '../hooks/reduxHook';
 import { setSortType } from '../redux/slices/filter/slice';
 import {
   FilterNamesKeys,

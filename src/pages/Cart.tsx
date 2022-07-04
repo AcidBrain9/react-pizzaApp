@@ -1,10 +1,11 @@
 import { FC } from 'react';
 import { Link } from 'react-router-dom';
-import CartEmpty from '../components/CartEmpty';
-import CartPizza from '../components/CartPizza';
+
 import { useAppDispatch, useAppSelector } from '../hooks/reduxHook';
 import { getCartItemsSelector, getCartTotalSelector } from '../redux/slices/cart/selecors';
 import { clearItems } from '../redux/slices/cart/slice';
+
+import { CartPizza, CartEmpty } from '../components';
 
 const Cart: FC = () => {
   const pizzas = useAppSelector(getCartItemsSelector);

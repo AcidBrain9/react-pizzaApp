@@ -1,0 +1,10 @@
+export { default as Categories } from './Categories';
+export { default as Pagination } from './Pagination';
+export { default as PizzaBlock } from './PizzaBlock';
+export { default as PizzaSceleton } from './PizzaBlock/PizzaSceleton';
+export { default as SearchPizza } from './SearchPizza';
+export { default as NotFoundBlock } from './NotFoundBlock';
+export { default as Sort } from './Sort';
+export { default as CartEmpty } from './CartEmpty';
+export { default as CartPizza } from './CartPizza';
+export { default as Header } from './Header';

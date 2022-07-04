@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { FC, useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { PizzaType } from '../redux/slices/pizzas/types';
 
 const FullPizza: FC = () => {
@@ -44,12 +44,10 @@ const FullPizza: FC = () => {
       <img src={pizza.imageUrl} alt={pizza.title} style={{ width: '300px' }} />
       <h2>{pizza.title}</h2>
       <h3>Стоимость: от {pizza.price} руб.</h3>
-      <p>
-        Состав: Lorem ipsum dolor sit amet consectetur adipisicing elit. Quam est perferendis
-        eveniet. Vel, adipisci aperiam! Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-        Aliquid sunt animi ea nisi iure earum tempore dicta sed, magnam fuga at dolorum in eligendi
-        quo odio sapiente autem natus magni.
-      </p>
+
+      <Link to="/" className="button  button--add go-back-btn">
+        <span>Назад</span>
+      </Link>
     </div>
   );
 };
