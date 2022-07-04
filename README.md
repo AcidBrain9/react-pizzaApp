@@ -1,3 +1,4 @@
 Использованные технологии:
-    TypeScript + React + Redux Toolkit
+    TypeScript + React + Redux 
+   
  
