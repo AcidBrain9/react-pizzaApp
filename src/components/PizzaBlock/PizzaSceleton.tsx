@@ -1,6 +1,7 @@
+import { FC } from 'react';
 import ContentLoader from 'react-content-loader';
 
-const PizzaSceleton = (props: any) => (
+const PizzaSceleton: FC = (props: any) => (
   <ContentLoader
     speed={2}
     width={280}

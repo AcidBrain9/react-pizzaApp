@@ -1,14 +1,19 @@
-import { FC } from 'react';
-import { useAppDispatch, useAppSelector } from '../hooks/reduxHook';
-import { setCategoryId } from '../redux/slices/filterSlice';
+import React from 'react';
+import { useAppDispatch } from '../hooks/reduxHook';
+import { setCategoryId } from '../redux/slices/filter/slice';
 
-type Props = {};
+const categories = ['Все', 'Мясные', 'Вегетарианская', 'Гриль', 'Острые', 'Закрытые'];
 
-const Categories: FC<Props> = () => {
+type Props = {
+  categoryId: number;
+};
+
+const Categories: React.FC<Props> = React.memo(({ categoryId }) => {
   const dispatch = useAppDispatch();
-  const categoryId = useAppSelector((store) => store.filter.categoryId);
 
-  const categories = ['Все', 'Мясные', 'Вегетарианская', 'Гриль', 'Острые', 'Закрытые'];
+  const onChangeCategory = (i: number) => {
+    dispatch(setCategoryId(i));
+  };
 
   return (
     <div className="categories">
@@ -16,7 +21,7 @@ const Categories: FC<Props> = () => {
         {categories.map((el, i) => (
           <li
             key={i}
-            onClick={() => dispatch(setCategoryId(i))}
+            onClick={() => onChangeCategory(i)}
             className={categoryId === i ? 'active' : ''}>
             {el}
           </li>
@@ -24,6 +29,6 @@ const Categories: FC<Props> = () => {
       </ul>
     </div>
   );
-};
+});
 
 export default Categories;

@@ -1,52 +1,42 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { PizzaType } from '../../App';
+import { fetchPizasParams, PizzasInitialType, PizzaType, Status } from './types';
 
-interface fetchPizasParams {
-  category: string;
-  searchFetch: string;
-  currentPage: number;
-  sortProperty: string;
-}
-
-export const fetchPizzasAction = createAsyncThunk(
+export const fetchPizzasAction = createAsyncThunk<PizzaType[], fetchPizasParams>(
   `pizzas/fetchPizzasStatus`,
-  async (params: fetchPizasParams) => {
+  async (params) => {
     const { category, searchFetch, currentPage, sortProperty } = params;
-    const { data } = await axios.get(
+    const { data } = await axios.get<PizzaType[]>(
       `https://62a8befbec36bf40bdad383f.mockapi.io/pizzas?page=${currentPage}&limit=8&${category}&sortBy=${sortProperty}${searchFetch}`,
     );
     return data;
   },
 );
-interface InitialState {
-  pizzaItems: PizzaType[];
-  status: string;
-}
+
 const initialState = {
   pizzaItems: [],
-  status: 'loading',
-} as InitialState;
+  status: Status.LOADING,
+} as PizzasInitialType;
 
 const cartSlice = createSlice({
   name: 'pizzas',
   initialState,
   reducers: {
-    setPizzas(state, action) {
+    setPizzas(state, action: PayloadAction<PizzaType[]>) {
       state.pizzaItems = action.payload;
     },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchPizzasAction.pending, (state) => {
-      state.status = 'loading';
+      state.status = Status.LOADING;
       state.pizzaItems = [];
     });
-    builder.addCase(fetchPizzasAction.fulfilled, (state, action) => {
+    builder.addCase(fetchPizzasAction.fulfilled, (state, action: PayloadAction<PizzaType[]>) => {
       state.pizzaItems = action.payload;
-      state.status = 'succes';
+      state.status = Status.SUCCESS;
     });
     builder.addCase(fetchPizzasAction.rejected, (state) => {
-      state.status = 'error';
+      state.status = Status.ERROR;
       state.pizzaItems = [];
     });
   },
